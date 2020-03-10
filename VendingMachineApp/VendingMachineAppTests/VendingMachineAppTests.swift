@@ -11,42 +11,40 @@ import XCTest
 
 class VendingMachineAppTests: XCTestCase {
     var vendingMachine = VendingMachine()
-    let coffee = Latte(manufacturer: "동서식품", brand: "스타벅스", capacity: 300, price: 2700, name: "스타벅스 카페라떼", manufacturedDate: Date(), expirationDate: Date(), isContainMilk: true, package: .plastic, temperature: 8)
-    let soda = Coke(manufacturer: "코카콜라", brand: "코카콜라", capacity: 200, price: 2000, name: "코카콜라", manufacturedDate: Date(), expirationDate: Date(), sugarRatio: .original, temperature: 2)
-    let milk = StrawberryMilk(manufacturer: "서울우유", brand: "서울우유", capacity: 200, price: 1200, name: "딸기맛 우유", manufacturedDate: Date(), expirationDate:  Date(), fatRatio: .original, isLactoFree: false, temperature: 3)
     
     override func setUp() {
-        vendingMachine.addStock(coffee)
-        vendingMachine.addStock(soda)
-        vendingMachine.addStock(milk)
+        vendingMachine.addStock(0)
+        vendingMachine.addStock(3)
+        vendingMachine.addStock(6)
     }
     
     func testRaiseMoney() {
-       vendingMachine.raiseMoney(fiveThousandCount: 2, thousandCount: 2, fiveHundredCount: 1, hundredCount: 2)
-        let leftMoney = vendingMachine.confirmBalance(balance: vendingMachine.balance)
-        XCTAssertEqual(leftMoney, 12700)
+        vendingMachine.raiseMoney(moneyUnit: Money.MoneyUnit.fiveThousand)
+        let leftMoney = vendingMachine.confirmBalance().description
+        XCTAssertEqual(leftMoney, "5000")
     }
     
     func testAvailableBeverageNowMoney() {
-         vendingMachine.raiseMoney(fiveThousandCount: 2, thousandCount: 2, fiveHundredCount: 1, hundredCount: 2)
-        let availabeBeverage = vendingMachine.reportAvailableBeverageNowMoney()
-        XCTAssertEqual(availabeBeverage.contains(coffee), true)
-        XCTAssertEqual(availabeBeverage.contains(soda), true)
-        XCTAssertEqual(availabeBeverage.contains(milk), true)
+        vendingMachine.raiseMoney(moneyUnit: Money.MoneyUnit.fiveThousand)
+        let availableBeverage = vendingMachine.reportAvailableBeverageNowMoney()
+        XCTAssertEqual(availableBeverage.contains(vendingMachine.bananaMilk), true)
+        XCTAssertEqual(availableBeverage.contains(vendingMachine.americano), true)
+        XCTAssertEqual(availableBeverage.contains(vendingMachine.coke), true)
     }
-    
+
     func testPurchaseBeverage() {
-        vendingMachine.raiseMoney(fiveThousandCount: 2, thousandCount: 2, fiveHundredCount: 1, hundredCount: 2)
-        vendingMachine.purchaseBeverage(beverage: coffee, price: coffee.price)
-        XCTAssertEqual(vendingMachine.balance, 10000)
+        vendingMachine.raiseMoney(moneyUnit: Money.MoneyUnit.fiveThousand)
+        vendingMachine.purchaseBeverage(index: 0)
+        XCTAssertEqual(vendingMachine.confirmBalance().description
+, "3800")
     }
     
     func testPurchaseHistory() {
-        vendingMachine.purchaseBeverage(beverage: coffee, price: coffee.price)
+        vendingMachine.purchaseBeverage(index: 0)
         let history = vendingMachine.reportPurchasedHistory()
-        XCTAssertEqual(history.contains(coffee), true)
-        XCTAssertEqual(history.contains(milk), false)
-        XCTAssertEqual(history.contains(soda), false)
+        XCTAssertEqual(history.contains(vendingMachine.bananaMilk), true)
+        XCTAssertEqual(history.contains(vendingMachine.americano), false)
+        XCTAssertEqual(history.contains(vendingMachine.coke), false)
     }
     
 }

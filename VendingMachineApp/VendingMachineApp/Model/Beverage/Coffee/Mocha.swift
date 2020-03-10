@@ -8,8 +8,11 @@
 
 import Foundation
 class Mocha: Coffee {
-    override init(manufacturer: String, brand: String, capacity: Int, price: Int, name: String, manufacturedDate: Date, expirationDate: Date, isContainMilk: Bool, package: Packages, temperature: Int) {
-        super.init(manufacturer: manufacturer, brand: brand, capacity: capacity, price: price, name: name, manufacturedDate: manufacturedDate, expirationDate: expirationDate, isContainMilk: isContainMilk, package: package, temperature: temperature)
+    private var wheepCreamAmount: Int
+    
+    init(manufacturer: String, brand: String, capacity: Int, price: Money, name: String, manufacturedDate: Date, expirationDate: Date, isContainMilk: Bool, package: Packages, temperature: Int, wheepCreamAmount: Int) {
+        self.wheepCreamAmount = wheepCreamAmount
+        super.init(manufacturer: manufacturer, brand: brand, capacity: capacity, price: price, name: name, manufacturedDate: manufacturedDate, expirationDate: expirationDate, package: package, temperature: temperature)
         
     }
 }

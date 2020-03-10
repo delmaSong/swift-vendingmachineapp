@@ -7,37 +7,60 @@
 //
 
 import Foundation
-struct Money {
-private var money: [String:Int] = ["fiveThousand" : 0, "thousand" : 0, "fiveHundred" : 0, "hundred" : 0]
+class Money {
+    private var balance: Int
     
-    mutating func raiseMoney(fiveThousandCount: Int, thousandCount: Int, fiveHundredCount: Int, hundredCount: Int) {
-         let insertedMoney = ["fiveThousand": fiveThousandCount, "thousand": thousandCount, "fiveHundred": fiveHundredCount, "hundred": hundredCount]
-              for (moneyType, count) in insertedMoney {
-                  guard let value = money[moneyType] else { return }
-                  money.updateValue(count + value, forKey: moneyType)
-              }
+    enum MoneyUnit: Int {
+        case fiveThousand = 5000
+        case thousand = 1000
+        case fiveHundred = 500
+        case hundred = 100
     }
     
-    mutating func confirmBalance(_ change: Int) -> Int {
-        var balance = change
-        for (key, value) in money {
-            var temp = 0
-            switch key {
-            case "fiveThousand":
-                temp += value * 5000
-            case "thousand":
-                temp += value * 1000
-            case "fiveHundred":
-                temp += value * 500
-            case "hundred":
-                temp += value * 100
-            default:
-                temp = 0
-            }
-            balance += temp
-        }
-        return balance
+    init(balance: Int = 0) {
+        self.balance = balance
+    }
+    
+    func raiseMoney(moneyUnit: MoneyUnit) {
+        balance += moneyUnit.rawValue
+        NotificationCenter.default.post(name: .updateBalanceLabel, object: "\(balance)")
+    }
+    
+    func confirmBalance(_ money: Money) {
+        balance = money.balance + self.balance
+    }
+    
+    func subtract(_ price: Money) {
+        balance = self.balance - price.balance
     }
     
     
+}
+
+extension Money: Equatable, Hashable {
+    static func == (lhs: Money, rhs: Money) -> Bool {
+        return lhs.balance == rhs.balance
+    }
+    
+    static func - (lhs: Money, rhs: Money) -> Int {
+        return lhs.balance - rhs.balance
+    }
+
+    static func < (lhs: Money, rhs: Money) -> Bool {
+        return lhs.balance < rhs.balance
+    }
+    
+    static func + (lhs: Money, rhs: Money) -> Int {
+        return lhs.balance + rhs.balance
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(balance)
+    }
+}
+
+extension Money: CustomStringConvertible {
+    var description: String {
+        "\(balance)"
+    }
 }
